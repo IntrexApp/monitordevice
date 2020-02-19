@@ -1,0 +1,12 @@
+[Unit]
+Description=MonitorDevice
+[Service]
+PIDFile=/tmp/monitordevice.pid
+User=monitordevice
+Group=monitordevice
+Restart=always
+KillSignal=SIGQUIT
+WorkingDirectory=/home/monitordevice/bin/
+ExecStart=/home/monitordevice/bin/index.js
+[Install]
+WantedBy=multi-user.target

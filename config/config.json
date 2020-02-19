@@ -1,0 +1,9 @@
+{
+    "db": {
+        "host":"PSQL host",
+        "port":"5432",
+        "username":"PSQL username",
+        "password":"PSQL password",
+        "database":"PSQL database"
+    }
+}
