@@ -23,7 +23,7 @@ exec('chmod 0600 ' + path.join(homedir, '.pgpass'));
 //Job setup
 const job = new cron('0 * * * *', function(){
     downloadBackup()
-}, null, true, "America/Boise")
+}, null, true)
 job.start();
 
 app.get('/about', function(req, res){
