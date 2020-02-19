@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:700|Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <title>Monitor Device - Bulk Data</title>
+    </head>
+    <body>
+        <div class="nav">
+            <h1>Monitor Device</h1>
+        </div>
+        <div class="backups">
+            <div class="bulk">
+                <h1>Delete by Day</h1>
+                <h2>Delete all backups within a certain day, month, & year.</h2>
+                <p class="label">Day:</p>
+                <input type="number" class="bd-day" placeholder="##" min="1" max="31">
+                <p class="label">Month:</p>
+                <input type="number" class="bd-month" placeholder="##" min="1" max="12">
+                <p class="label">Year:</p>
+                <input type="number" class="bd-year" placeholder="####" min="1900">
+                <button onclick="bulkDay()"><p class="micon">delete_forever</p><p>Delete</p></button>
+            </div>
+            <div class="bulk">
+                <h1>Delete by Month</h1>
+                <h2>Delete all backups within a certain month & year.</h2>
+                <p class="label">Month:</p>
+                <input type="number" class="bm-month" placeholder="##" min="1" max="12">
+                <p class="label">Year:</p>
+                <input type="number" class="bm-year" placeholder="####" min="1900">
+                <button onclick="bulkMonth()"><p class="micon">delete_forever</p><p>Delete</p></button>
+            </div>
+            <div class="bulk">
+                <h1>Delete by Year</h1>
+                <h2>Delete all backups within a certain year.</h2>
+                <p class="label">Year:</p>
+                <input type="number" class="by-year" placeholder="####" min="1900">
+                <button onclick="bulkYear()"><p class="micon">delete_forever</p><p>Delete</p></button>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    function bulkDay() {
+        const day = $('.bd-day').val().trim()
+        const month = $('.bd-month').val().trim()
+        const year = $('.bd-year').val().trim()
+        window.location.href = "/bulk/day?month=" + month + "&day=" + day + "&year=" + year
+    }
+    function bulkMonth() {
+        const year = $('.bm-year').val().trim()
+        const month = $('.bm-month').val().trim()
+        window.location.href = "/bulk/month?month=" + month + "&year=" + year
+    }
+    function bulkYear() {
+        const year = $('.by-year').val().trim()
+        window.location.href = "/bulk/year?year=" + year
+    }
+</script>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        background-color: whitesmoke;
+    }
+    .nav {
+        background-color: #4e16ed;
+        padding: 5px 5px 5px 30px;
+        height: 50px;
+    }
+    .nav h1 {
+        color: white;
+        font-family: 'Noto Sans JP', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        padding-top: 10px;
+        margin:0;
+    }
+    .bulk {
+        width: 50%;
+        margin: 20px auto 50px auto;
+    }
+    .bulk h1 {
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+    .bulk h2 {
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+    .bulk a {
+        vertical-align: top;
+        margin-top: 12px;
+        font-weight: 800;
+        margin-right: 30px;
+        text-decoration: none;
+        font-family: 'Source Sans Pro', sans-serif;
+    }
+    .bulk input {
+        display: block;
+        border: none;
+        background-color: whitesmoke;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-size: 30px;
+        margin-bottom: 20px;
+        width: 90px;
+    }
+    .bulk button {
+        display: block;
+        background-color: red;
+        border-radius: 20px;
+        color: white;
+        border: none;
+        padding: 0 30px 0 25px;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 600;
+        margin-top: 0;
+        font-size: 20px;
+    }
+    .bulk button p {
+        vertical-align: top;
+        display: inline-block;
+        margin: 10px 0;
+    }
+    .bulk .label {
+        font-family: 'Source Sans Pro', sans-serif;
+        margin-bottom: 0;
+    }
+    .micon {
+        display: inline-block;
+        font-family: 'Material Icons';
+        font-size: 25px;
+        margin-top: 16px;
+        margin-right: 16px;
+    }
+    .backup-action {
+        vertical-align: top;
+        margin-top: -6px;
+        margin-right: 12px;
+        font-weight: 200;
+        font-size: 30px;
+        font-family: 'Material Icons';
+        display: inline-block;
+    }
+    .backup-colored {
+        color: #4e16ed;
+    }
+    .backup-delete {
+        color: red;
+    }
+</style>

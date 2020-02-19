@@ -12,6 +12,7 @@
     "child_process": "^1.0.2",
     "cron": "^1.8.2",
     "express": "^4.17.1",
+    "express-handlebars": "^3.1.0",
     "moment": "^2.24.0",
     "node-ssh": "^7.0.0"
   }
