@@ -7,3 +7,4 @@ chown -R monitordevice:monitordevice ./
 chmod +x ./install.sh
 chmod +x ./update.sh
 chmod +x ./index.js
+systemctl restart monitordevice.service
