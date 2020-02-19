@@ -15,7 +15,7 @@ echo "Step 3/4 - Copying files..."
 mkdir /home/monitordevice/backups
 cp config/config.json /home/monitordevice/config.json
 cp -R ./ /home/monitordevice/bin
-chown -R monitordevice:monitordevice /home/monitordevice/
+chown -R monitordevice:monitordevice /home/monitordevice/backups
 chmod +x /home/monitordevice/bin/index.js
 cp config/config.service /etc/systemd/system/monitordevice.service
 
