@@ -46,16 +46,16 @@
         const day = $('.bd-day').val().trim()
         const month = $('.bd-month').val().trim()
         const year = $('.bd-year').val().trim()
-        window.location.href = "/bulk/day?month=" + month + "&day=" + day + "&year=" + year
+        window.location.href = "/bulk/delete/day?month=" + month + "&day=" + day + "&year=" + year
     }
     function bulkMonth() {
         const year = $('.bm-year').val().trim()
         const month = $('.bm-month').val().trim()
-        window.location.href = "/bulk/month?month=" + month + "&year=" + year
+        window.location.href = "/bulk/delete/month?month=" + month + "&year=" + year
     }
     function bulkYear() {
         const year = $('.by-year').val().trim()
-        window.location.href = "/bulk/year?year=" + year
+        window.location.href = "/bulk/delete/year?year=" + year
     }
 </script>
 <style>

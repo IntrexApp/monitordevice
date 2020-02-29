@@ -7,7 +7,7 @@ const path = require('path');
 const { exec } = require("child_process");
 const moment = require('moment');
 const exhbs = require('express-handlebars');
-
+const zipFolder = require('zip-folder')
 const homedir = require('os').homedir();
 const datadir = homedir
 const backupsdir = path.join(homedir, 'backups')
@@ -32,15 +32,28 @@ job.start();
 app.get('/', function(req, res){
     var files = []
     var fss = fs.readdirSync(backupsdir)
+
+    var days = {};
+
     fss.forEach(function(f){
         var snapshot = f.replace('.bak', '');
+        var mom = moment(snapshot)
         var date = moment(snapshot).format('MMMM Do YYYY, h:mm:ss a')
-        files.push({date:date, day:moment(snapshot).format('MMMM Do YYYY'), time:moment(snapshot).format('h:mm:ss a'), timestamp:snapshot});
+        files.push({date:mom, display:date, day:moment(snapshot).format('MMMM Do YYYY'), time:moment(snapshot).format('h:mm:ss a'), timestamp:snapshot});
     });
     files = files.sort(function(a,b){
         return moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf()
     })
-    res.render('backups.hbs', {files:files})
+
+    files.forEach(function(f){
+        if (days[f.day] != null) {
+            days[f.day].backups.push(f)
+        } else {
+            const mom = f.date
+            days[f.day] = {title:f.day, backups:[f], downloadstring:'/bulk/download/day?month='+(mom.month()+1)+'&day='+mom.date()+'&year='+mom.year(), delstring:'/bulk/delete/day?month='+(mom.month()+1)+'&day='+mom.date()+'&year='+mom.year(), id:mom.format('MMMM-DD-YYYY')}
+        }
+    })
+    res.render('backups.hbs', {files:files, days:days})
 })
 app.get('/capture', function(req, res){
     const timestamp = moment()
@@ -52,7 +65,7 @@ app.get('/capture', function(req, res){
 app.get('/bulk', function(req, res){
     res.render('bulk.hbs')
 })
-app.get('/bulk/day', function(req, res) {
+app.get('/bulk/delete/day', function(req, res) {
     var month = req.query.month
     var day = req.query.day
     if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
@@ -68,7 +81,7 @@ app.get('/bulk/day', function(req, res) {
     });
     res.redirect('/')
 })
-app.get('/bulk/month', function(req, res) {
+app.get('/bulk/delete/month', function(req, res) {
     var month = req.query.month
     if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
     var q = moment()
@@ -82,7 +95,7 @@ app.get('/bulk/month', function(req, res) {
     });
     res.redirect('/')
 })
-app.get('/bulk/year', function(req, res) {
+app.get('/bulk/delete/year', function(req, res) {
     var q = moment()
     q = q.year(req.query.year)
     q = q.utc()
@@ -93,6 +106,30 @@ app.get('/bulk/year', function(req, res) {
         }
     });
     res.redirect('/')
+})
+app.get('/bulk/download/day', async function(req, res){
+    var month = req.query.month
+    var day = req.query.day
+    if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
+    if (day.length < 2) { day = "0" + day }
+    var q = moment()
+    q = q.month(month).date(day).year(req.query.year)
+    q = q.utc()
+
+    var dumpPath = path.join(datadir, 'dump-' + makeRandom(10))
+    fs.mkdirSync(dumpPath)
+
+    var fss = fs.readdirSync(backupsdir)
+    for (var i=0; i < fss.length; i++) {
+        var f = fss[i]
+        if (f.includes(q.format('YYYY-MM-DD'))) {
+            console.log(f)
+            await fs.createReadStream(path.join(backupsdir, f)).pipe(fs.createWriteStream(path.join(dumpPath, f)));
+        }
+    }
+    zipFolder(dumpPath, path.join(dumpPath + '.zip'), function(err){
+        res.download(path.join(dumpPath + '.zip'))
+    })
 })
 app.get('/delete/:file', function(req, res){
     fs.unlinkSync(path.join(backupsdir, req.params.file + '.bak'))
@@ -119,6 +156,16 @@ async function downloadBackup() {
         console.log('Backup for ' + timestamp.format('MMMM Do YYYY, h:mm:ss a') + ' complete.')
     })
 }
+
+function makeRandom(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
 
 console.log('Verifying settings - creating test backup.')
 downloadBackup()
