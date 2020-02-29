@@ -79,7 +79,7 @@ app.get('/bulk/delete/year', function(req, res) {
 })
 app.get('/bulk/download/day', async function(req, res){
     var q = fileProvider.queryMomentForDay(req.query.day, req.query.month, req.query.year)
-    var dumpPath = path.join(datadir, q.format('MMMM Do YYYY - ' + makeRandom(3)))
+    var dumpPath = path.join(datadir, q.format('MMMM Do YYYY') + ' - ' + makeRandom(3))
     fs.mkdirSync(dumpPath)
 
     var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
