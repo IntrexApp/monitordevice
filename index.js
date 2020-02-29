@@ -12,6 +12,8 @@ const homedir = require('os').homedir();
 const datadir = homedir
 const backupsdir = path.join(homedir, 'backups')
 
+const fileProvider = require('./provider.js')
+
 const config = require(path.join(datadir, 'config.json'))
 
 const app = express();
@@ -30,20 +32,9 @@ const job = new cron('0 * * * *', function(){
 job.start();
 
 app.get('/', function(req, res){
-    var files = []
-    var fss = fs.readdirSync(backupsdir)
-
     var days = {};
 
-    fss.forEach(function(f){
-        var snapshot = f.replace('.bak', '');
-        var mom = moment(snapshot)
-        var date = moment(snapshot).format('MMMM Do YYYY, h:mm:ss a')
-        files.push({date:mom, display:date, day:moment(snapshot).format('MMMM Do YYYY'), time:moment(snapshot).format('h:mm:ss a'), timestamp:snapshot});
-    });
-    files = files.sort(function(a,b){
-        return moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf()
-    })
+    files = fileProvider.allData()
 
     files.forEach(function(f){
         if (days[f.day] != null) {
@@ -66,67 +57,36 @@ app.get('/bulk', function(req, res){
     res.render('bulk.hbs')
 })
 app.get('/bulk/delete/day', function(req, res) {
-    var month = req.query.month
-    var day = req.query.day
-    if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
-    if (day.length < 2) { day = "0" + day }
-    var q = moment()
-    q = q.month(month).date(day).year(req.query.year)
-    q = q.utc()
-    var fss = fs.readdirSync(backupsdir)
+    var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
     fss.forEach(function(f){
-        if (f.includes(q.format('YYYY-MM-DD'))) {
-            fs.unlinkSync(path.join(backupsdir, f))
-        }
+        fs.unlinkSync(path.join(backupsdir, f.filename))
     });
     res.redirect('/')
 })
 app.get('/bulk/delete/month', function(req, res) {
-    var month = req.query.month
-    if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
-    var q = moment()
-    q = q.month(month).year(req.query.year)
-    q = q.utc()
-    var fss = fs.readdirSync(backupsdir)
+    var fss = fileProvider.month(req.query.month, req.query.year)
     fss.forEach(function(f){
-        if (f.includes(q.format('YYYY-MM'))) {
-            fs.unlinkSync(path.join(backupsdir, f))
-        }
+        fs.unlinkSync(path.join(backupsdir, f.filename))
     });
     res.redirect('/')
 })
 app.get('/bulk/delete/year', function(req, res) {
-    var q = moment()
-    q = q.year(req.query.year)
-    q = q.utc()
-    var fss = fs.readdirSync(backupsdir)
+    var fss = fileProvider.year(req.query.year)
     fss.forEach(function(f){
-        if (f.includes(q.format('YYYY'))) {
-            fs.unlinkSync(path.join(backupsdir, f))
-        }
+        fs.unlinkSync(path.join(backupsdir, f.filename))
     });
     res.redirect('/')
 })
 app.get('/bulk/download/day', async function(req, res){
-    var month = req.query.month
-    var day = req.query.day
-    if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
-    if (day.length < 2) { day = "0" + day }
-    var q = moment()
-    q = q.month(month).date(day).year(req.query.year)
-    q = q.utc()
-
-    var dumpPath = path.join(datadir, 'dump-' + makeRandom(10))
+    var q = fileProvider.queryMomentForDay(req.query.day, req.query.month, req.query.year)
+    var dumpPath = path.join(datadir, q.format('MMMM Do YYYY - ' + makeRandom(3)))
     fs.mkdirSync(dumpPath)
 
-    var fss = fs.readdirSync(backupsdir)
-    for (var i=0; i < fss.length; i++) {
-        var f = fss[i]
-        if (f.includes(q.format('YYYY-MM-DD'))) {
-            console.log(f)
-            await fs.createReadStream(path.join(backupsdir, f)).pipe(fs.createWriteStream(path.join(dumpPath, f)));
-        }
-    }
+    var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
+    fss.forEach(function(f){
+        var mom = moment(f.filename.replace('.bak', ''))
+        fs.copyFileSync(path.join(backupsdir, f.filename), path.join(dumpPath, mom.format('YYYY-MM-DD HH:mm') + '.bak'))
+    })
     zipFolder(dumpPath, path.join(dumpPath + '.zip'), function(err){
         res.download(path.join(dumpPath + '.zip'))
     })
