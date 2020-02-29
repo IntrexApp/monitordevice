@@ -18,7 +18,8 @@ cp -R ./ /home/monitordevice/bin
 chown -R monitordevice:monitordevice /home/monitordevice/backups
 chmod +x /home/monitordevice/bin/index.js
 cp config/config.service /etc/systemd/system/monitordevice.service
-chown -R monitordevice:monitordevice /home/monitordevice/bin
+chown -R monitordevice:monitordevice /home/monitordevice
+chmod -R +777 monitordevice:monitordevice /home/monitordevice
 
 echo "Step 4/4 - Finalizing..."
 cd /home/monitordevice/bin 
