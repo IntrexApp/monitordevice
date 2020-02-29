@@ -109,7 +109,7 @@ async function downloadBackup() {
     if (!exists) {
         fs.mkdirSync(backupsdir);
     }
-    const timestamp = moment()
+    const timestamp = moment().utc()
     const command = 'pg_dump -h ' + config.db.host + ' -p ' + config.db.port + ' -U ' + config.db.username + ' ' + config.db.database + ' > ' + path.join(backupsdir, timestamp.toISOString() + '.bak');
     exec(command, (err, stdout, stderr) => {
         console.log(stderr)
