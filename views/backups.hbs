@@ -10,7 +10,7 @@
         <div class="nav">
             <h1>{{appearance.title}}</h1>
             <p class="nav-icon" onclick="createBackup()">add</p>
-            <p class="nav-icon" onclick="window.location.href='/delete'">delete</p>
+            <p class="nav-icon all-fold" onclick="window.location.href='/maintenance'">settings</p>
             <p class="nav-icon all-fold" onclick="collapseAll()">keyboard_arrow_down</p>
         </div>
         <div class="create">
@@ -63,6 +63,12 @@
             hiding[id] = true;
             $('.' + id).hide()
             $('.' + id + '-fold').text('keyboard_arrow_up')
+        }
+    }
+    function downloadAll() {
+        var download = confirm('Really download all backups? This file could be really really big.')
+        if (download) {
+            window.location.href = "/bulk/download/everything"
         }
     }
     function collapseAll() {

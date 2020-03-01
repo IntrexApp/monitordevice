@@ -9,6 +9,9 @@ const moment = require('moment');
 const exhbs = require('express-handlebars');
 const zipFolder = require('zip-a-folder')
 const homedir = require('os').homedir();
+const diskspace = require('disk-space')
+const foldersize = require('get-folder-size')
+const del = require('del')
 const datadir = homedir
 const backupsdir = path.join(homedir, 'backups')
 const fileProvider = require('./provider.js')
@@ -57,6 +60,20 @@ app.get('/capture', function(req, res){
         res.send(true)
     })
 })
+app.get('/maintenance', function(req, res){
+    diskspace('/', function(err, data){
+        var used = (data.usedSize*0.000000000931).toFixed(2)
+        var total = (data.totalSize*0.000000000931).toFixed(2)
+        var free = ((data.totalSize - data.usedSize)*0.000000000931).toFixed(2)
+        foldersize(path.join(archivePath), function(size){
+            var archive = (size*0.000000000931).toFixed(2)
+            foldersize(datadir, function(datasize){
+                var monitorsize = (datasize*0.000000000931).toFixed(2)
+                res.render('maintenance.hbs', {appearance:appearance, space:{total:total,used:used, free:free}, archive:archive, monitor:monitorsize})
+            })
+        })
+    })
+})
 app.get('/delete', function(req, res){
     res.render('bulk.hbs', {appearance:appearance})
 })
@@ -96,6 +113,12 @@ app.get('/bulk/download/day', async function(req, res){
         res.download(path.join(dumpPath + '.zip'))
     })
 })
+app.get('/bulk/download/everything', function(req,res){
+    var dumpPath = path.join(archivePath, 'Snapshot ' + moment().format('MMMM Do YYYY H-mm A') + '.zip')
+    zipFolder.zipFolder(backupsdir, dumpPath ,function(err){
+        res.download(path.join(dumpPath))
+    })
+})
 app.get('/delete/:file', function(req, res){
     fs.unlinkSync(path.join(backupsdir, req.params.file + '.bak'))
     res.redirect('/')
@@ -106,6 +129,16 @@ app.get('/download/:file', function(req, res){
 })
 app.get('/about', function(req, res){
     res.send({status:true,version:package.version})
+})
+
+app.get('/internal/archives/clear', function(req, res){
+    del([archivePath], {force:true}).then(function(d){
+        console.log(d)
+        res.redirect('/maintenance?success=1&message=Cleared!')
+    })
+})
+app.get('/internal/config/download', function(req, res){
+    res.download(path.join(datadir, 'config.json'))
 })
 
 
