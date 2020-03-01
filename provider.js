@@ -32,7 +32,8 @@ function year(year) {
     var files = []
 
     fss.forEach(function(f){
-        if (f.includes(q.format('YYYY'))) {
+        var t = moment(f.replace('.bak', ''))
+        if (q.year() == t.year()) {
             files.push(createDescriptor(f))
         }
     })
@@ -50,7 +51,8 @@ function month(month, year) {
 
     var fss = fs.readdirSync(backupsdir)
     fss.forEach(function(f){
-        if (f.includes(q.format('YYYY-MM'))) {
+        var t = moment(f.replace('.bak', ''))
+        if (q.month() == t.month() && q.year() == t.year()) {
             files.push(createDescriptor(f))
         }
     })
@@ -64,7 +66,8 @@ function day(day, month, year) {
 
     var fss = fs.readdirSync(backupsdir)
     fss.forEach(function(f){
-        if (f.includes(q.format('YYYY-MM-DD'))) {
+        var t = moment(f.replace('.bak', ''))
+        if (q.date() == t.date() && q.month() == t.month() && q.year() == t.year()) {
             files.push(createDescriptor(f))
         }
     })
@@ -79,6 +82,7 @@ function queryMomentForDay(day, month, year) {
     var q = moment()
     q = q.month(month).date(day).year(year)
     q = q.utc()
+    console.log(q.toISOString())
     return q
 }
 

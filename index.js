@@ -7,14 +7,13 @@ const path = require('path');
 const { exec } = require("child_process");
 const moment = require('moment');
 const exhbs = require('express-handlebars');
-const zipFolder = require('zip-folder')
+const zipFolder = require('zip-a-folder')
 const homedir = require('os').homedir();
 const datadir = homedir
 const backupsdir = path.join(homedir, 'backups')
-
 const fileProvider = require('./provider.js')
-
 const config = require(path.join(datadir, 'config.json'))
+const archivePath = path.join(datadir, 'archives')
 
 const app = express();
 app.engine('hbs', exhbs({defaultLayout:''}))
@@ -84,15 +83,16 @@ app.get('/bulk/delete/year', function(req, res) {
 })
 app.get('/bulk/download/day', async function(req, res){
     var q = fileProvider.queryMomentForDay(req.query.day, req.query.month, req.query.year)
-    var dumpPath = path.join(datadir, q.format('MMMM Do YYYY') + ' - ' + makeRandom(3))
+    var dumpPath = path.join(archivePath, q.format('MMMM Do YYYY') + ' - ' + makeRandom(3))
+    fs.mkdirSync(archivePath)
     fs.mkdirSync(dumpPath)
 
     var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
     fss.forEach(function(f){
         var mom = moment(f.filename.replace('.bak', ''))
-        fs.copyFileSync(path.join(backupsdir, f.filename), path.join(dumpPath, mom.format('YYYY-MM-DD HH:mm') + '.bak'))
+        fs.copyFileSync(path.join(backupsdir, f.filename), path.join(dumpPath, mom.local().format('YYYY-MM-DD HH:mm') + '.bak'))
     })
-    zipFolder(dumpPath, path.join(dumpPath + '.zip'), function(err){
+    zipFolder.zipFolder(dumpPath, path.join(dumpPath + '.zip') ,function(err){
         res.download(path.join(dumpPath + '.zip'))
     })
 })
@@ -115,6 +115,7 @@ async function downloadBackup() {
         fs.mkdirSync(backupsdir);
     }
     const timestamp = moment().utc()
+    console.log(timestamp.toISOString())
     const command = 'pg_dump -h ' + config.db.host + ' -p ' + config.db.port + ' -U ' + config.db.username + ' ' + config.db.database + ' > ' + path.join(backupsdir, timestamp.toISOString() + '.bak');
     exec(command, (err, stdout, stderr) => {
         console.log(stderr)

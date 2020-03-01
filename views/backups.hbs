@@ -31,6 +31,7 @@
                 {{#each backups}}
                 <div class="backup {{../id}}">
                     <h1>{{display}}</h1>
+                    <h3>{{filename}}</h3>
                     <a href="/download/{{timestamp}}" class="backup-colored"><p class="backup-action">cloud_download</p>Download</a>
                     <a href="/delete/{{timestamp}}" class="backup-delete"><p class="backup-action">delete_outline</p>Delete</a>
                 </div>
@@ -193,6 +194,12 @@
         margin-right: auto;
     }
     .backup h1 {
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 200;
+        margin-bottom: 6px;
+    }
+    .backup h3 {
+        margin-top: 0;
         font-family: 'Source Sans Pro', sans-serif;
         font-weight: 200;
     }
