@@ -11,6 +11,7 @@
             <h1>{{appearance.title}}</h1>
             <p class="nav-icon" onclick="createBackup()">add</p>
             <p class="nav-icon" onclick="window.location.href='/delete'">delete</p>
+            <p class="nav-icon all-fold" onclick="collapseAll()">keyboard_arrow_down</p>
         </div>
         <div class="create">
             <h1>Creating backup, please wait...</h1>
@@ -20,7 +21,7 @@
             {{#each days}}
             <div class="day">
                 <div class="day-header">
-                    <p class="action {{id}}-fold" onclick="collapseSection('{{id}}')">keyboard_arrow_down</p>
+                    <p class="action {{id}}-fold all-fold" onclick="collapseSection('{{id}}')">keyboard_arrow_down</p>
                     <h1>{{title}}</h1>
                     <div class="action-row">
                         <a class="action" href="{{downloadstring}}">cloud_download</a><a href="{{downloadstring}}" class="actiontext">Download All</a>
@@ -41,6 +42,7 @@
 </html>
 <script>
     var hiding = {}
+    var hidingAll = false
     function collapseSection(id) {
         if (hiding[id] != null) {
             if (hiding[id] == true) {
@@ -52,10 +54,25 @@
                 $('.' + id).hide()
                 $('.' + id + '-fold').text('keyboard_arrow_up')
             }
+        } else if (hidingAll) {
+            hiding[id] = false;
+            $('.' + id).show()
+            $('.' + id + '-fold').text('keyboard_arrow_down')
         } else {
             hiding[id] = true;
             $('.' + id).hide()
             $('.' + id + '-fold').text('keyboard_arrow_up')
+        }
+    }
+    function collapseAll() {
+        if (hidingAll == true) {
+            $('.all-fold').text('keyboard_arrow_down')
+            $('.backup').show()
+            hidingAll = false
+        } else {
+            $('.all-fold').text('keyboard_arrow_up')
+            $('.backup').hide()
+            hidingAll = true
         }
     }
     function createBackup() {
@@ -101,8 +118,8 @@
         margin-bottom: 20px;
     }
     .day-header {
-        width: auto;
-        margin: 0 200px 0 200px;
+        width: 1000px;
+        margin: 0 auto 0 auto;
     }
     .day-header h1 {
         vertical-align: middle;
@@ -121,6 +138,8 @@
     .day-header .action-row {
         display: inline-block;
         float: right;
+        margin: 0;
+        padding: 0;
     }
     .action-row .action {
         margin-top: 18px;
@@ -169,9 +188,9 @@
         float: right;
     }
     .backup {
-        width: 600px;
-        margin-left: 300px;
-        margin-right: 300px;
+        width: 700px;
+        margin-left: auto;
+        margin-right: auto;
     }
     .backup h1 {
         font-family: 'Source Sans Pro', sans-serif;
@@ -188,11 +207,12 @@
     .backup-action {
         vertical-align: top;
         margin-top: -6px;
-        margin-right: 12px;
         font-weight: 200;
         font-size: 30px;
         font-family: 'Material Icons';
         display: inline-block;
+        margin-right: 12px;
+        margin-left: 18px;
     }
     .backup-colored {
         color: {{appearance.color}};

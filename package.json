@@ -1,7 +1,7 @@
 {
-  "name": "mad",
+  "name": "monitordevice",
   "version": "0.0.1",
-  "description": "Monitor Analysis Device",
+  "description": "Monitor Device - download & parse postgres updates",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
