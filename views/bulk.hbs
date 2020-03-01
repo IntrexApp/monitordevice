@@ -4,11 +4,11 @@
         <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:700|Source+Sans+Pro&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <title>Monitor Device - Bulk Data</title>
+        <title>{{appearance.title}} - Delete Data</title>
     </head>
     <body>
         <div class="nav">
-            <h1>Monitor Device</h1>
+            <h1>{{appearance.title}}</h1>
         </div>
         <div class="backups">
             <div class="bulk">
@@ -65,9 +65,13 @@
         background-color: whitesmoke;
     }
     .nav {
-        background-color: #4e16ed;
+        position: sticky;
+        top:0;
+        left:0;
+        right: 0;
         padding: 5px 5px 5px 30px;
         height: 50px;
+        background-color: {{appearance.color}};
     }
     .nav h1 {
         color: white;
@@ -142,7 +146,7 @@
         display: inline-block;
     }
     .backup-colored {
-        color: #4e16ed;
+        color: {{appearance.color}};
     }
     .backup-delete {
         color: red;

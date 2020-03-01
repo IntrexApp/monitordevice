@@ -5,5 +5,9 @@
         "username":"PSQL username",
         "password":"PSQL password",
         "database":"PSQL database"
+    },
+    "appearance": {
+        "color":"#4e16ed",
+        "title": "Monitor Device"
     }
 }

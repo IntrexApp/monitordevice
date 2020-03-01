@@ -25,6 +25,11 @@ const valString = config.db.host + ':' + config.db.port + ':' + config.db.databa
 fs.writeFile(path.join(homedir, '.pgpass'), valString, (err)=>{});
 exec('chmod 0600 ' + path.join(homedir, '.pgpass'));
 
+var appearance = config['appearance']
+if (appearance == null) {
+    appearance = {color:"#4e16ed", title:"Monitor Device"}
+}
+
 //Job setup
 const job = new cron('0 * * * *', function(){
     downloadBackup()
@@ -44,7 +49,7 @@ app.get('/', function(req, res){
             days[f.day] = {title:f.day, backups:[f], downloadstring:'/bulk/download/day?month='+(mom.month()+1)+'&day='+mom.date()+'&year='+mom.year(), delstring:'/bulk/delete/day?month='+(mom.month()+1)+'&day='+mom.date()+'&year='+mom.year(), id:mom.format('MMMM-DD-YYYY')}
         }
     })
-    res.render('backups.hbs', {files:files, days:days})
+    res.render('backups.hbs', {files:files, days:days, appearance:appearance})
 })
 app.get('/capture', function(req, res){
     const timestamp = moment()
@@ -53,8 +58,8 @@ app.get('/capture', function(req, res){
         res.send(true)
     })
 })
-app.get('/bulk', function(req, res){
-    res.render('bulk.hbs')
+app.get('/delete', function(req, res){
+    res.render('bulk.hbs', {appearance:appearance})
 })
 app.get('/bulk/delete/day', function(req, res) {
     var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
