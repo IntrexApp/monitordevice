@@ -8,21 +8,21 @@ apt update
 apt -y install postgresql-client-11 nodejs
 
 echo "Step 2/4 - Creating user..."
-groupadd monitordevice
-useradd -g monitordevice -m monitordevice
+groupadd pgclone
+useradd -g pgclone -m pgclone
 
 echo "Step 3/4 - Copying files..."
-mkdir /home/monitordevice/backups
-cp config/config.json /home/monitordevice/config.json
-cp -R ./ /home/monitordevice/bin
-chown -R monitordevice:monitordevice /home/monitordevice/backups
-chmod +x /home/monitordevice/bin/index.js
-cp config/config.service /etc/systemd/system/monitordevice.service
-chown -R monitordevice:monitordevice /home/monitordevice
-chmod -R +777 /home/monitordevice
+mkdir /home/pgclone/backups
+cp config/config.json /home/pgclone/config.json
+cp -R ./ /home/pgclone/bin
+chown -R pgclone:pgclone /home/pgclone/backups
+chmod +x /home/pgclone/bin/index.js
+cp config/config.service /etc/systemd/system/pgclone.service
+chown -R pgclone:pgclone /home/pgclone
+chmod -R +777 /home/pgclone
 
 echo "Step 4/4 - Finalizing..."
-cd /home/monitordevice/bin 
+cd /home/pgclone/bin 
 npm install
 systemctl enable monitordevice.service
-systemctl restart monitordevice.service
+systemctl restart pgclone.service
