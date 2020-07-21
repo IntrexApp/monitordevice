@@ -164,12 +164,14 @@ export class Backup {
     display: string
     day: string
     time: string
+    size: string
     timestamp: string
 
     static fromFile(filename: string): Backup {
         var snapshot = filename.replace('.bak', '');
         var mom = moment(snapshot, 'YYYY-MM-DD-HH-mm-ssZZ')
-        return {filename:filename, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
+        const fileInfo = fs.statSync(path.join(Paths.backups, filename))
+        return {filename:filename, size: (fileInfo.size/1000000).toPrecision(3), date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
     }
 
 }

@@ -30,8 +30,10 @@
                 </div>
                 {{#each backups}}
                 <div class="backup {{../id}}">
-                    <h1>{{display}}</h1>
-                    <h3>{{filename}}</h3>
+                    <div class="backup-head">
+                        <h1>{{display}}</h1>
+                        <h3>{{size}} MB</h3>
+                    </div>
                     <a href="/download/{{timestamp}}" class="backup-colored"><p class="backup-action">cloud_download</p>Download</a>
                     <a href="/delete/{{timestamp}}" class="backup-delete"><p class="backup-action">delete_outline</p>Delete</a>
                 </div>
@@ -132,6 +134,7 @@
         vertical-align: middle;
         font-family: 'Source Sans Pro', sans-serif;
         font-weight: bold;
+        font-size: 25px;
         display: inline-block;
     }
     .day-header .action {
@@ -140,7 +143,7 @@
         vertical-align: middle;
         display: inline-block;
         font-family: 'Material Icons';
-        font-size: 40px;
+        font-size: 30px;
     }
     .day-header .action-row {
         display: inline-block;
@@ -159,7 +162,7 @@
         display: inline-block;
         font-family: 'Source Sans Pro', sans-serif;
         vertical-align: middle;
-        padding-top: 15px;
+        padding-top: 16px;
         font-weight: bold;
         color: {{appearance.color}};;
     }
@@ -198,33 +201,45 @@
         width: 700px;
         margin-left: auto;
         margin-right: auto;
+        margin-bottom: 10px;
+    }
+    .backup-head {
+        margin-bottom: 5px;
     }
     .backup h1 {
         font-family: 'Source Sans Pro', sans-serif;
         font-weight: 200;
         margin-bottom: 6px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 0;
+        font-size: 20px;
     }
     .backup h3 {
-        margin-top: 0;
         font-family: 'Source Sans Pro', sans-serif;
         font-weight: 200;
+        display: inline-block;
+        float: right;
+        margin-top: 5px;
+        vertical-align: top;
     }
     .backup a {
         vertical-align: top;
-        margin-top: 12px;
+        margin-top: 10px;
         font-weight: 800;
-        margin-right: 30px;
+        margin-right: 50px;
+        font-size: 15px;
         text-decoration: none;
         font-family: 'Source Sans Pro', sans-serif;
     }
     .backup-action {
+        margin-top: 0px;
         vertical-align: top;
-        margin-top: -6px;
         font-weight: 200;
-        font-size: 30px;
+        font-size: 20px;
         font-family: 'Material Icons';
         display: inline-block;
-        margin-right: 12px;
+        margin-right: 6px;
         margin-left: 18px;
     }
     .backup-colored {
