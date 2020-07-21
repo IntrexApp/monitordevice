@@ -32,6 +32,7 @@ export class DatabaseConfig {
     username: string
     password: string
     database: string
+    frequency: string
 
     static connectionString(config: DatabaseConfig) {
         return config.host + ':' + config.port + ':' + config.database + ':' + config.username + ':' + config.password

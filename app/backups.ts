@@ -164,7 +164,8 @@ export class Backup {
     display: string
     day: string
     time: string
-    size: string
+    timeAge:string
+    size: {number: number, display: string, type: string}
     timestamp: string
 
     static fromFile(filename: string): Backup {
@@ -182,7 +183,7 @@ export class Backup {
             sizeStr = sizeNum.toPrecision(2)
         }
 
-        return {filename:filename, size: {number: sizeNum, display: sizeStr, type: sizeName}, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
+        return {filename:filename, timeAge: mom.fromNow(), size: {number: sizeNum, display: sizeStr, type: sizeName}, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
     }
 
 }

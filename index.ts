@@ -31,10 +31,12 @@ fs.writeFile(path.join(Paths.home, '.pgpass'), DatabaseConfig.connectionString(E
 exec('chmod 0600 ' + path.join(Paths.home, '.pgpass'));
 
 //Job setup
-const job = new cron('0 * * * *', function(){
+const job = new cron(EnviromentMode.config.db.frequency ?? '0 * * * *', function(){
     downloadBackup()
 }, null, true)
 job.start();
+console.log(`pgclone will automatically capture backups according to cron schedule ${EnviromentMode.config.db.frequency ?? '0 * * * *'}`)
+
 
 app.get('/', function(req, res){
     var days = {};
