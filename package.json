@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^14.0.24",
     "child_process": "^1.0.2",
     "cron": "^1.8.2",
     "del": "^5.1.0",
