@@ -6,7 +6,7 @@ wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key a
 RELEASE=$(lsb_release -cs)
 echo "deb http://apt.postgresql.org/pub/repos/apt/ ${RELEASE}"-pgdg main | tee  /etc/apt/sources.list.d/pgdg.list
 apt update
-apt -y install postgresql-client-11 nodejs
+apt -y install postgresql-client-11 nodejs npm
 npm install typescript -g
 
 echo " --# Step 2/4 - Creating user..."
@@ -16,6 +16,7 @@ useradd -g pgclone -m pgclone
 echo " --# Step 3/4 - Copying files..."
 mkdir /home/pgclone/backups
 cp config/config.json /home/pgclone/config.json
+cp ./update.sh ../update.sh
 cp -R ./ /home/pgclone/bin
 chown -R pgclone:pgclone /home/pgclone/backups
 chmod +x /home/pgclone/bin/index.js
