@@ -32,7 +32,7 @@
                 <div class="backup {{../id}}">
                     <div class="backup-head">
                         <h1>{{display}}</h1>
-                        <h3>{{size}} MB</h3>
+                        <h3>{{size.display}} {{size.type}}</h3>
                     </div>
                     <a href="/download/{{timestamp}}" class="backup-colored"><p class="backup-action">cloud_download</p>Download</a>
                     <a href="/delete/{{timestamp}}" class="backup-delete"><p class="backup-action">delete_outline</p>Delete</a>

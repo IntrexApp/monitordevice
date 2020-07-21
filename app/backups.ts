@@ -171,7 +171,18 @@ export class Backup {
         var snapshot = filename.replace('.bak', '');
         var mom = moment(snapshot, 'YYYY-MM-DD-HH-mm-ssZZ')
         const fileInfo = fs.statSync(path.join(Paths.backups, filename))
-        return {filename:filename, size: (fileInfo.size/1000000).toPrecision(3), date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
+
+        var sizeNum = (fileInfo.size/1000000)
+        var sizeName = "MB"
+        var sizeStr = sizeNum.toPrecision(2)
+
+        if (sizeNum < 0.1) {
+            sizeName = "KB"
+            sizeNum = (fileInfo.size/1000)
+            sizeStr = sizeNum.toPrecision(2)
+        }
+
+        return {filename:filename, size: {number: sizeNum, display: sizeStr, type: sizeName}, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
     }
 
 }
