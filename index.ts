@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const express = require('express');
-const package = require('../package.json');
+const pkg = require('../package.json');
 const cron = require('cron').CronJob;
 const fs = require('fs');
 const path = require('path');
@@ -14,7 +14,7 @@ const foldersize = require('get-folder-size')
 const del = require('del')
 const datadir = homedir
 const backupsdir = path.join(homedir, 'backups')
-const fileProvider = require('./provider.js')
+import * as fileProvider from './provider'
 const config = require(path.join(datadir, 'config.json'))
 const archivePath = path.join(datadir, 'archives')
 
@@ -128,7 +128,7 @@ app.get('/download/:file', function(req, res){
     res.download(path.join(backupsdir, req.params.file + '.bak'), date.format('YYYY-DD-MM hh-mm-ss') + '.bak')
 })
 app.get('/about', function(req, res){
-    res.send({status:true,version:package.version})
+    res.send({status:true,version:pkg.version})
 })
 
 app.get('/internal/archives/clear', function(req, res){

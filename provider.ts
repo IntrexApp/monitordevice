@@ -1,17 +1,17 @@
-const path = require('path');
-const fs = require('fs');
+import * as path from 'path'
+import * as fs from 'fs'
 const moment = require('moment');
 const homedir = require('os').homedir();
 const backupsdir = path.join(homedir, 'backups')
 
 
-function createDescriptor(filename) {
+export function createDescriptor(filename) {
     var snapshot = filename.replace('.bak', '');
     var mom = moment(snapshot)
     return {filename:filename, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
 }
 
-function allData() {
+export function allData() {
     var files = []
     var fss = fs.readdirSync(backupsdir)
 
@@ -24,7 +24,7 @@ function allData() {
     return files
 }
 
-function year(year) {
+export function year(year) {
     var q = moment()
     q = q.year(year)
     q = q.utc()
@@ -40,7 +40,7 @@ function year(year) {
 
     return files
 }
-function month(month, year) {
+export function month(month, year) {
     var month = month
     if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
     var q = moment()
@@ -59,7 +59,7 @@ function month(month, year) {
 
     return files
 }
-function day(day, month, year) {
+export function day(day, month, year) {
     var q = queryMomentForDay(day, month, year)
 
     var files = []
@@ -74,7 +74,7 @@ function day(day, month, year) {
 
     return files
 }
-function queryMomentForDay(day, month, year) {
+export function queryMomentForDay(day, month, year) {
     var month = month
     var day = day
     if (month.length < 2) { month = "0" + (parseInt(month)-1) } else { month = (parseInt(month)-1)}
@@ -84,12 +84,4 @@ function queryMomentForDay(day, month, year) {
     q = q.utc()
     console.log(q.toISOString())
     return q
-}
-
-module.exports = {
-    allData:allData,
-    year:year,
-    month:month,
-    day:day,
-    queryMomentForDay:queryMomentForDay
 }
