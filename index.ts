@@ -37,7 +37,7 @@ app.set('view engine', 'hbs')
 app.use(favicon(path.join(__dirname, '..', 'assets', 'pgclone.png')))
 
 if (!testmode) {
-    require(path.join(datadir, 'config.json'))
+    config = require(path.join(datadir, 'config.json'))
     const valString = config.db.host + ':' + config.db.port + ':' + config.db.database + ':' + config.db.username + ':' + config.db.password
     fs.writeFile(path.join(homedir, '.pgpass'), valString, (err)=>{});
     exec('chmod 0600 ' + path.join(homedir, '.pgpass'));
