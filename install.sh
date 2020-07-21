@@ -27,5 +27,6 @@ chmod -R +777 /home/pgclone
 echo " --# Step 4/4 - Finalizing..."
 cd /home/pgclone/bin 
 npm install
+tsc
 systemctl enable monitordevice.service
 systemctl restart pgclone.service
