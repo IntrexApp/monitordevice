@@ -1,6 +1,6 @@
 # pgclone
 
-![Logo](https://github.com/hobbsome/pgclone/raw/master/assets/pgclone.png =100x100)
+![Logo](https://github.com/hobbsome/pgclone/raw/master/assets/logo-tall.png)
 
 Easily create backups of Postgres databases.
 
