@@ -15,6 +15,7 @@ const del = require('del')
 const datadir = homedir
 const backupsdir = path.join(homedir, 'backups')
 import * as fileProvider from './provider'
+import { arch } from 'os';
 const config = require(path.join(datadir, 'config.json'))
 const archivePath = path.join(datadir, 'archives')
 
@@ -66,10 +67,13 @@ app.get('/maintenance', function(req, res){
         var total = (data.totalSize*0.000000000931).toFixed(2)
         var free = ((data.totalSize - data.usedSize)*0.000000000931).toFixed(2)
         foldersize(path.join(archivePath), function(size){
-            var archive = (size*0.000000000931).toFixed(2)
+            var archive = (size*0.000000000931)
+            var archiveString = ''
+            if (archive == NaN) { archiveString = '0' }
+            else { archiveString = archive.toFixed(2) }
             foldersize(datadir, function(datasize){
                 var monitorsize = (datasize*0.000000000931).toFixed(2)
-                res.render('maintenance.hbs', {appearance:appearance, space:{total:total,used:used, free:free}, archive:archive, monitor:monitorsize})
+                res.render('maintenance.hbs', {appearance:appearance, space:{total:total,used:used, free:free}, archive:archiveString, monitor:monitorsize})
             })
         })
     })
