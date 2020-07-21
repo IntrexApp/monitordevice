@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const express = require('express');
-const package = require('./package.json');
+const package = require('../package.json');
 const cron = require('cron').CronJob;
 const fs = require('fs');
 const path = require('path');
