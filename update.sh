@@ -27,13 +27,12 @@ then
     echo "#- Building TypeScript(3/5)"
     tsc
     echo "#- Overwriting installation (4/5)"
-    cp update.sh ./update.sh
-    chmod +x /root/update.sh
-    chmod +x update.sh
+    cp update.sh /home/pgclone/update.sh
+    chmod +x /home/pgclone/update.sh
     chmod +x build/index.js
     chmod +x install.sh
     echo "#- Restarting service (5/5)"
-    service intrex restart
+    service pgclone restart
     echo "#-- pgclone updated. --#"
     echo "#-- learn more at github.com/hobbsome/pgclone --#"
     echo "#-- thanks! --#"

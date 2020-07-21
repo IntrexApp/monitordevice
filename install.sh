@@ -29,5 +29,5 @@ cd /home/pgclone/bin
 npm install
 tsc
 systemctl daemon-reload
-systemctl enable monitordevice.service
+systemctl enable pgclone.service
 systemctl restart pgclone.service
