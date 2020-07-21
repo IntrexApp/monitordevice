@@ -79,7 +79,8 @@ app.get('/bulk/delete/year', function(req, res) {
     res.redirect('/')
 })
 app.get('/bulk/download/day', async function(req, res){
-    var q = moment().utc().set('day', req.query.day).set('month', req.query.month-1).set('year', req.query.year).local()
+    console.log(req.query)
+    var q = moment().utc().set('date', req.query.day).set('month', req.query.month-1).set('year', req.query.year)
     var fss = BackupManager.day(req.query.day, req.query.month, req.query.year)
     BackupManager.createArchive(fss, q, function(url, folder){
         res.download(url)
