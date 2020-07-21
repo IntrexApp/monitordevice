@@ -16,7 +16,7 @@ useradd -g pgclone -m pgclone
 echo " --# Step 3/4 - Copying files..."
 mkdir /home/pgclone/backups
 cp config/config.json /home/pgclone/config.json
-cp ./update.sh ../update.sh
+cp ./update.sh /home/pgclone/update.sh
 cp -R ./ /home/pgclone/bin
 chown -R pgclone:pgclone /home/pgclone/backups
 chmod +x /home/pgclone/bin/index.js
