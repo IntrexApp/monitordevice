@@ -41,7 +41,7 @@ job.start();
 app.get('/', function(req, res){
     var days = {};
 
-    files = fileProvider.allData()
+    var files = fileProvider.allData()
 
     files.forEach(function(f){
         if (days[f.day] != null) {

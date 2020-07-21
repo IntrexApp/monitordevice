@@ -7,6 +7,6 @@ Group=monitordevice
 Restart=always
 KillSignal=SIGQUIT
 WorkingDirectory=/home/monitordevice/bin/
-ExecStart=/home/monitordevice/bin/index.js
+ExecStart=/home/monitordevice/bin/build/index.js
 [Install]
 WantedBy=multi-user.target
