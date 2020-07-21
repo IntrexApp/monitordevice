@@ -1,4 +1,8 @@
 build/
+backups/
+archives/
+.pgpass
+config.json
 # Logs
 logs
 *.log

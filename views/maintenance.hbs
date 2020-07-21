@@ -17,7 +17,7 @@
                     <h5>storage</h5>
                     <h1>Storage</h1>
                 </div>
-                <p>{{space.used}} GB out of {{space.total}} GB used. {{appearance.title}} is currently using {{monitor}} GB. There's another {{space.free}} GB of space on this {{appearance.title}} server.</p>
+                <p>{{space.used}} GB out of {{space.total}} GB used. {{appearance.title}} is currently using {{space.pgclone}} GB. There's another {{space.free}} GB of space on this {{appearance.title}} server.</p>
             </div>
             <div class="option">
                 <div class="ohead">
@@ -32,7 +32,7 @@
                     <h5>desktop_access_disabled</h5>
                     <h1>Clear Archives Folder</h1>
                 </div>
-                <p>When a user downloads backups in bulk, the .zip files are temporarily written to an "archives" folder. To clear up storage on this {{appearance.title}} server, clear the archives data. Only do this if no other users are trying to download data. Archives currently occupy {{archive}} GB of space.</p>
+                <p>When a user downloads backups in bulk, the .zip files are temporarily written to an "archives" folder. To clear up storage on this {{appearance.title}} server, clear the archives data. Only do this if no other users are trying to download data. Archives currently occupy {{space.archive}} GB of space.</p>
                 <button onclick="window.location.href='/internal/archives/clear'">Clear</button>
             </div>
             <div class="option">

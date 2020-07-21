@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/index.js",
-    "dev": "concurrently \"tsc -w\" \"nodemon build/index.js --test\""
+    "dev": "concurrently \"tsc -w\" \"nodemon build/index.js --test\"",
+    "prepare": "mkdir archives && mkdir backups"
   },
   "author": "",
   "license": "ISC",

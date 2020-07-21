@@ -9,5 +9,5 @@ function randomComp() {
 }
 
 export function random() {
-    return `${randomComp}-${randomComp}-${randomComp}-${randomComp}`
+    return `${randomComp()}-${randomComp()}`
 }

@@ -1,34 +1,25 @@
 #!/usr/bin/env node
-
-var testmode = false
+import { EnviromentMode }   from './app/enviroment'
+const path = require('path');
 if (process.argv.includes('--test')) {
-    testmode = true
+    EnviromentMode.testMode = true
     console.log('Running in test mode..')
 }
+EnviromentMode.config = require(path.join((EnviromentMode.testMode == true) ? path.join(__dirname, '..') : require('os').homedir(), 'config.json'))
+EnviromentMode.load()
 
+import { DatabaseConfig, Paths } from './app/enviroment';
 const express = require('express');
 const pkg = require('../package.json');
 const cron = require('cron').CronJob;
-const fs = require('fs');
-const path = require('path');
 const { exec } = require("child_process");
-const moment = require('moment');
 const exhbs = require('express-handlebars');
-const zipFolder = require('zip-a-folder')
-const homedir = require('os').homedir();
-const diskspace = require('disk-space')
-const foldersize = require('get-folder-size')
-const del = require('del')
-const datadir = homedir
-const backupsdir = path.join(homedir, 'backups')
-import * as fileProvider from './app/provider'
+import * as moment from 'moment'
+import * as fs from 'fs'
 import * as favicon from 'serve-favicon'
-import { arch } from 'os';
-import { ConfigObject } from './app/model';
-import { random } from './app/utility';
 import { FileManager } from './app/files';
-var config:ConfigObject = new ConfigObject()
-const archivePath = path.join(datadir, 'archives')
+import { BackupManager, Backup } from './app/backups';
+import { random } from './app/utility';
 
 const app = express();
 app.engine('hbs', exhbs({defaultLayout:''}))
@@ -36,15 +27,8 @@ app.set('view engine', 'hbs')
 
 app.use(favicon(path.join(__dirname, '..', 'assets', 'pgclone.png')))
 
-if (!testmode) {
-    config = require(path.join(datadir, 'config.json'))
-    const valString = config.db.host + ':' + config.db.port + ':' + config.db.database + ':' + config.db.username + ':' + config.db.password
-    fs.writeFile(path.join(homedir, '.pgpass'), valString, (err)=>{});
-    exec('chmod 0600 ' + path.join(homedir, '.pgpass'));
-}
-if (config.appearance == null) {
-    config.appearance = {color:"#4e16ed", title:"Monitor Device"}
-}
+fs.writeFile(path.join(Paths.home, '.pgpass'), DatabaseConfig.connectionString(EnviromentMode.config.db), (err)=>{});
+exec('chmod 0600 ' + path.join(Paths.home, '.pgpass'));
 
 //Job setup
 const job = new cron('0 * * * *', function(){
@@ -55,7 +39,7 @@ job.start();
 app.get('/', function(req, res){
     var days = {};
 
-    var files = fileProvider.allData()
+    var files = BackupManager.all()
 
     files.forEach(function(f){
         if (days[f.day] != null) {
@@ -65,71 +49,56 @@ app.get('/', function(req, res){
             days[f.day] = {title:f.day, backups:[f], downloadstring:'/bulk/download/day?month='+(mom.month()+1)+'&day='+mom.date()+'&year='+mom.year(), delstring:'/bulk/delete/day?month='+(mom.month()+1)+'&day='+mom.date()+'&year='+mom.year(), id:mom.format('MMMM-DD-YYYY')}
         }
     })
-    res.render('backups.hbs', {files:files, days:days, appearance:config.appearance})
+    res.render('backups.hbs', {files:files, days:days, appearance:EnviromentMode.config.appearance})
 })
 app.get('/capture', function(req, res){
-    const timestamp = moment()
-    const command = 'pg_dump -h ' + config.db.host + ' -p ' + config.db.port + ' -U ' + config.db.username + ' ' + config.db.database + ' > ' + path.join(backupsdir, timestamp.toISOString() + '.bak');
-    exec(command, (err, stdout, stderr) => {
-        res.send(true)
+    BackupManager.create(function() {
+        res.send({status:true})
     })
 })
 app.get('/maintenance', async function(req, res){
     const sizes = await FileManager.directorySpace()
-    res.render('maintenance.hbs', {appearance:config.appearance, space:sizes})
+    res.render('maintenance.hbs', {appearance:EnviromentMode.config.appearance, space:sizes})
 })
 app.get('/delete', function(req, res){
-    res.render('bulk.hbs', {appearance:config.appearance})
+    res.render('bulk.hbs', {appearance:EnviromentMode.config.appearance})
 })
 app.get('/bulk/delete/day', function(req, res) {
-    var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
-    fss.forEach(function(f){
-        fs.unlinkSync(path.join(backupsdir, f.filename))
-    });
+    var fss = BackupManager.day(req.query.day, req.query.month, req.query.year)
+    BackupManager.deleteBackups(fss)
     res.redirect('/')
 })
 app.get('/bulk/delete/month', function(req, res) {
-    var fss = fileProvider.month(req.query.month, req.query.year)
-    fss.forEach(function(f){
-        fs.unlinkSync(path.join(backupsdir, f.filename))
-    });
+    var fss = BackupManager.month(req.query.month, req.query.year)
+    BackupManager.deleteBackups(fss)
     res.redirect('/')
 })
 app.get('/bulk/delete/year', function(req, res) {
-    var fss = fileProvider.year(req.query.year)
-    fss.forEach(function(f){
-        fs.unlinkSync(path.join(backupsdir, f.filename))
-    });
+    var fss = BackupManager.year(req.query.year)
+    BackupManager.deleteBackups(fss)
     res.redirect('/')
 })
 app.get('/bulk/download/day', async function(req, res){
-    var q = fileProvider.queryMomentForDay(req.query.day, req.query.month, req.query.year)
-    var dumpPath = path.join(archivePath, q.format('MMMM Do YYYY') + ' - ' + random())
-    fs.mkdirSync(archivePath)
-    fs.mkdirSync(dumpPath)
-
-    var fss = fileProvider.day(req.query.day, req.query.month, req.query.year)
-    fss.forEach(function(f){
-        var mom = moment(f.filename.replace('.bak', ''))
-        fs.copyFileSync(path.join(backupsdir, f.filename), path.join(dumpPath, mom.local().format('YYYY-MM-DD HH:mm') + '.bak'))
-    })
-    zipFolder.zipFolder(dumpPath, path.join(dumpPath + '.zip') ,function(err){
-        res.download(path.join(dumpPath + '.zip'))
+    var q = moment().utc().set('day', req.query.day).set('month', req.query.month-1).set('year', req.query.year).local()
+    var fss = BackupManager.day(req.query.day, req.query.month, req.query.year)
+    BackupManager.createArchive(fss, q, function(url, folder){
+        res.download(url)
     })
 })
 app.get('/bulk/download/everything', function(req,res){
-    var dumpPath = path.join(archivePath, 'Snapshot ' + moment().format('MMMM Do YYYY H-mm A') + '.zip')
-    zipFolder.zipFolder(backupsdir, dumpPath ,function(err){
-        res.download(path.join(dumpPath))
-    })
+   BackupManager.archiveEverything(function(url, folder) {
+        res.download(url)
+   })
 })
 app.get('/delete/:file', function(req, res){
-    fs.unlinkSync(path.join(backupsdir, req.params.file + '.bak'))
+    fs.unlinkSync(path.join(Paths.backups, req.params.file + '.bak'))
     res.redirect('/')
 })
 app.get('/download/:file', function(req, res){
-    var date = moment(req.params.file)
-    res.download(path.join(backupsdir, req.params.file + '.bak'), date.format('YYYY-DD-MM hh-mm-ss') + '.bak')
+    var date = moment(req.params.file, 'YYYY-MM-DD-HH-mm-ssZZ')
+    const fileURL = path.join(Paths.backups, req.params.file + '.bak')
+    res.setHeader('Content-disposition', `attachment; filename=${date.format('MMM Do YYYY HH:mm:ss')}.bak`)
+    fs.createReadStream(fileURL).pipe(res)
 })
 app.get('/about', async function(req, res){
     const space = await FileManager.directorySpace()
@@ -137,28 +106,26 @@ app.get('/about', async function(req, res){
 })
 
 app.get('/internal/archives/clear', function(req, res){
-    del([archivePath], {force:true}).then(function(d){
-        console.log(d)
-        res.redirect('/maintenance?success=1&message=Cleared!')
-    })
+    BackupManager.clearArchives()
+    res.redirect('/maintenance')
 })
 app.get('/internal/config/download', function(req, res){
-    res.download(path.join(datadir, 'config.json'))
+    res.download(path.join(Paths.data, 'config.json'))
 })
 
 
 async function downloadBackup() {
-    if (!testmode) {
-        const exists = fs.existsSync(backupsdir)
+    if (!EnviromentMode.testMode) {
+        const exists = fs.existsSync(Paths.backups)
         if (!exists) {
-            fs.mkdirSync(backupsdir);
+            fs.mkdirSync(Paths.backups);
         }
-        const timestamp = moment().utc()
-        console.log(timestamp.toISOString())
-        const command = 'pg_dump -h ' + config.db.host + ' -p ' + config.db.port + ' -U ' + config.db.username + ' ' + config.db.database + ' > ' + path.join(backupsdir, timestamp.toISOString() + '.bak');
-        exec(command, (err, stdout, stderr) => {
-            console.log(stderr)
-            console.log('Backup for ' + timestamp.format('MMMM Do YYYY, h:mm:ss a') + ' complete.')
+        const archiveExists = fs.existsSync(Paths.archives)
+        if (!archiveExists) {
+            fs.mkdirSync(Paths.archives);
+        }
+        BackupManager.create(function() {
+            console.log('Backup complete.')
         })
     }
 }
