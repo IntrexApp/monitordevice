@@ -33,10 +33,18 @@
                     <div class="backup-head">
                         <h2>{{timeAge}}</h2>
                         <h1>• {{display}}</h1>
+                        {{#if complete}}
                         <h3>{{size.display}} {{size.type}}</h3>
+                        {{else}}
+                        <h3>In progress</h3>
+                        {{/if}}
                     </div>
+                    {{#if complete}}
                     <a href="/download/{{timestamp}}" class="backup-colored"><p class="backup-action">cloud_download</p>Download</a>
                     <a href="/delete/{{timestamp}}" class="backup-delete"><p class="backup-action">delete_outline</p>Delete</a>
+                    {{else}}
+                    <h4 class="incomplete">Backup hasn't finished yet. </h4>
+                    {{/if}}
                 </div>
                 {{/each}}
                 </div>
@@ -233,6 +241,10 @@
         float: right;
         margin-top: 5px;
         vertical-align: top;
+    }
+    .backup .incomplete {
+        font-family: 'Source Sans Pro', sans-serif;
+        margin-top:0;
     }
     .backup a {
         vertical-align: top;

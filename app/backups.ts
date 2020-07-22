@@ -107,7 +107,10 @@ export class BackupManager {
         fs.mkdirSync(dumpPath)
 
         backups.forEach(function(f){
-            fs.copyFileSync(path.join(Paths.backups, f.filename), path.join(dumpPath, f.date.local().format('YYYY-MM-DD HH-mm-ss') + '.bak'))
+            const info = fs.statSync(path.join(Paths.backups, f.filename))
+            if (info.size > 0) {
+                fs.copyFileSync(path.join(Paths.backups, f.filename), path.join(dumpPath, f.date.local().format('YYYY-MM-DD HH-mm-ss') + '.bak'))
+            }
         })
         zipFolder.zipFolder(dumpPath, dumpPath + '.zip' ,function(err){
             const files = fs.readdirSync(dumpPath)
@@ -126,7 +129,10 @@ export class BackupManager {
         const backups = this.all()
 
         backups.forEach(function(f){
-            fs.copyFileSync(path.join(Paths.backups, f.filename), path.join(dumpPath, f.date.local().format('YYYY-MM-DD HH-mm-ss') + '.bak'))
+            const info = fs.statSync(path.join(Paths.backups, f.filename))
+            if (info.size > 0) {
+                fs.copyFileSync(path.join(Paths.backups, f.filename), path.join(dumpPath, f.date.local().format('YYYY-MM-DD HH-mm-ss') + '.bak'))
+            }
         })
         zipFolder.zipFolder(dumpPath, path.join(dumpPath + '.zip') ,function(err){
             const files = fs.readdirSync(dumpPath)
@@ -167,6 +173,7 @@ export class Backup {
     timeAge:string
     size: {number: number, display: string, type: string}
     timestamp: string
+    complete: boolean
 
     static fromFile(filename: string): Backup {
         var snapshot = filename.replace('.bak', '');
@@ -183,7 +190,7 @@ export class Backup {
             sizeStr = sizeNum.toPrecision(2)
         }
 
-        return {filename:filename, timeAge: mom.fromNow(), size: {number: sizeNum, display: sizeStr, type: sizeName}, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
+        return {filename:filename, complete:sizeNum != 0, timeAge: mom.fromNow(), size: {number: sizeNum, display: sizeStr, type: sizeName}, date:mom, display:mom.format('MMMM Do YYYY, h:mm:ss a'), day:mom.format('MMMM Do YYYY'), time:mom.format('h:mm:ss a'), timestamp:snapshot}
     }
 
 }
