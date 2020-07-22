@@ -21,6 +21,16 @@
             </div>
             <div class="option">
                 <div class="ohead">
+                    <h5>assessment</h5>
+                    <h1>Stats</h1>
+                </div>
+                <ul>
+                    <li>Total backups: {{stats.count}}</li>
+                    <li>Average backup size: {{stats.average.display}} {{stats.average.format}}</li>
+                </ul>
+            </div>
+            <div class="option">
+                <div class="ohead">
                     <h5>filter_list</h5>
                     <h1>Delete Data</h1>
                 </div>
@@ -64,6 +74,9 @@
     }
     a {
         text-decoration: none;
+    }
+    li {
+        font-family: 'Source Sans Pro', sans-serif;
     }
     .create {
         display: none;

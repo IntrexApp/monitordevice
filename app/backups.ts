@@ -6,6 +6,7 @@ import { exec } from "child_process"
 import { Paths } from './enviroment';
 import { DatabaseConfig, EnviromentMode } from './enviroment';
 import { random } from './utility';
+import { DirectorySizes } from './files'
 
 export class BackupManager {
 
@@ -160,6 +161,28 @@ export class BackupManager {
                 fs.unlinkSync(lvl1)
             }
         })
+    }
+
+    static stats() {
+        const backupLength = fs.readdirSync(Paths.backups).length
+        var backupFolderSize = 0
+        for (const p of fs.readdirSync(Paths.backups)) {
+            const stat = fs.statSync(path.join(Paths.backups, p))
+            backupFolderSize += stat.size
+        }
+        const avg = backupFolderSize/backupLength
+
+        var sizeNum = avg/1000000
+        var sizeName = "MB"
+        var sizeStr = sizeNum.toPrecision(2)
+
+        if (sizeNum < 0.1) {
+            sizeName = "KB"
+            sizeNum = avg/1000
+            sizeStr = sizeNum.toPrecision(2)
+        }
+
+        return {count: backupLength, average: {number:sizeNum, display: sizeStr, format: sizeName}}
     }
 
 }

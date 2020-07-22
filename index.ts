@@ -60,7 +60,8 @@ app.get('/capture', function(req, res){
 })
 app.get('/maintenance', async function(req, res){
     const sizes = await FileManager.directorySpace()
-    res.render('maintenance.hbs', {appearance:EnviromentMode.config.appearance, space:sizes})
+    const stats = BackupManager.stats()
+    res.render('maintenance.hbs', {appearance:EnviromentMode.config.appearance, space:sizes, stats: stats})
 })
 app.get('/delete', function(req, res){
     res.render('bulk.hbs', {appearance:EnviromentMode.config.appearance})
