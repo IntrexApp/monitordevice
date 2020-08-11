@@ -16,7 +16,7 @@ export class FileManager {
         const sizes = new DirectorySizes()
         const fileSize = await ds(Paths.root)
         var archiveSize = 0
-        var pgclone = 0
+        var pgclone = await ds(Paths.home)
 
         sizes.total = (fileSize.size*kConvert).toFixed(2)
         sizes.free = (fileSize.free*kConvert).toFixed(2)
@@ -29,17 +29,10 @@ export class FileManager {
                 archiveSize += stat.size
             }
         })
-        var backupFiles = fs.readdirSync(Paths.data)
-        backupFiles.forEach( a => {
-            const stat = fs.statSync(path.join(Paths.data,a))
-            if (!stat.isDirectory) {
-                pgclone += stat.size
-            }
-        })
 
 
         sizes.archive = (archiveSize*kConvert).toFixed(2)
-        sizes.pgclone = (pgclone*kConvert).toFixed(2)
+        sizes.pgclone = (pgclone.size*kConvert).toFixed(2)
         
         return sizes
     }
