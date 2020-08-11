@@ -35,11 +35,11 @@ then
     echo "#- Overwriting installation (4/5)"
     cp update.sh /home/pgclone/update.sh
     chmod +x /home/pgclone/update.sh
-    cp update.sh ~${SUDO_USER}/update.sh
-    chmod +x ~${SUDO_USER}/update.sh
+    cp update.sh /home/${SUDO_USER}/update.sh
+    chmod +x /home/${SUDO_USER}/update.sh
     chmod +x build/index.js
     chmod +x install.sh
-    echo "    !- Update script copied to ~${SUDO_USER}/update.sh. You can update from your home directory."
+    echo "    !- Update script copied to /home/${SUDO_USER}/update.sh. You can update from your home directory."
     echo "#- Restarting service (5/5)"
     service pgclone restart
     echo "#-- pgclone updated. --#"
