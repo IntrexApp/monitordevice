@@ -18,6 +18,8 @@ mkdir /home/pgclone/backups
 cp config/config.json /home/pgclone/config.json
 cp ./update.sh /home/pgclone/update.sh
 cp -R ./ /home/pgclone/bin
+cp ./update.sh ~${SUDO_USER}/update.sh
+chmod +x ~${SUDO_USER}/update.sh
 chown -R pgclone:pgclone /home/pgclone/backups
 chmod +x /home/pgclone/bin/index.js
 cp config/config.service /etc/systemd/system/pgclone.service
