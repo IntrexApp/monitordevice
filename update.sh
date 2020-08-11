@@ -29,6 +29,8 @@ then
     echo "#- Overwriting installation (4/5)"
     cp update.sh /home/pgclone/update.sh
     chmod +x /home/pgclone/update.sh
+    cp update.sh ~/update.sh
+    chmod +x ~/update.sh
     chmod +x build/index.js
     chmod +x install.sh
     echo "#- Restarting service (5/5)"
