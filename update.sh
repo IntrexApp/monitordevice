@@ -1,5 +1,11 @@
 #!/bin/bash
 echo " ---- pgclone updater. ---- "
+
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "!ERROR! - To update pgclone, you have to be running as root."
+    exit
+fi
+
 if [ -z "$1" ]
 then
     echo "    !- Branch = master (default) - (to change branches, type ./update.sh YOUR_BRANCH)"
