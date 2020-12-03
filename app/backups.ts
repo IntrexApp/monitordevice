@@ -31,6 +31,21 @@ export class BackupManager {
         return files
     }
 
+    static limit(cap: number = 10) {
+        var files: Backup[] = []
+        var fss: string[] = fs.readdirSync(Paths.backups)
+    
+        fss.forEach(function(f, index) {
+            if (index < cap) {
+                files.push(Backup.fromFile(f))
+            }
+        })
+        files = files.sort(function(a,b){
+            return b.date.valueOf() - a.date.valueOf()
+        })
+        return files
+    }
+
     static year(year: number) {
         var q = moment()
         q = q.year(year)

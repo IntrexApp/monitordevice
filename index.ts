@@ -27,7 +27,7 @@ app.set('view engine', 'hbs')
 
 app.use(favicon(path.join(__dirname, '..', 'assets', 'pgclone.png')))
 
-fs.writeFile(path.join(Paths.home, '.pgpass'), DatabaseConfig.connectionString(EnviromentMode.config.db), (err)=>{});
+fs.writeFile(path.join(require('os').homedir(), '.pgpass'), DatabaseConfig.connectionString(EnviromentMode.config.db), (err)=>{});
 exec('chmod 0600 ' + path.join(Paths.home, '.pgpass'));
 
 //Job setup
@@ -41,7 +41,7 @@ console.log(`pgclone will automatically capture backups according to cron schedu
 app.get('/', function(req, res){
     var days = {};
 
-    var files = BackupManager.all()
+    var files = BackupManager.limit(100)
 
     files.forEach(function(f){
         if (days[f.day] != null) {
